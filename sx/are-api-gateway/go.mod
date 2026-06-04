@@ -4,10 +4,9 @@ go 1.25.9
 
 require (
 	github.com/MicahParks/keyfunc/v3 v3.7.0
-	github.com/golang-jwt/jwt/v5 v5.2.3
+	github.com/golang-jwt/jwt/v5 v5.3.1
 	github.com/prometheus/client_golang v1.23.2
 	github.com/segmentio/kafka-go v0.4.49
-	github.com/srex-dev/are-foundation/tools/testing/policyfixtures v0.0.0
 	google.golang.org/grpc v1.79.3
 	google.golang.org/protobuf v1.36.10
 )

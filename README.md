@@ -38,6 +38,7 @@ Mutating/check paths require:
 make certs
 make up
 make smoke
+make pressure
 ```
 
 The local compose gateway listens on `http://localhost:18085` to avoid colliding with a full ARE developer stack.
@@ -49,6 +50,20 @@ register agent -> issue passport -> evaluate scope -> evaluate policy -> write p
 ```
 
 No customer action is executed by default.
+
+`make pressure` runs a public-safe authority-path load check:
+
+```text
+register fake authority pool -> verify passport -> evaluate scope -> evaluate policy -> list passports
+```
+
+It reports achieved RPS, p95/p99 latency, endpoint mix, and error rate under `reports/foundation-pressure/`. It still keeps `executed=false` and `receipt_created=false`.
+
+You can tune it directly:
+
+```bash
+python tools/smoke/foundation_pressure.py --target-rps 50 --duration-seconds 30 --concurrency 16
+```
 
 ## Developer Gates
 

@@ -1,4 +1,4 @@
-.PHONY: certs up down smoke test gate secret-scan clean
+.PHONY: certs up down smoke pressure test gate secret-scan clean
 
 COMPOSE=docker compose -f deploy/compose/docker-compose.yml
 
@@ -13,6 +13,9 @@ down:
 
 smoke:
 	python tools/smoke/foundation_smoke.py
+
+pressure:
+	python tools/smoke/foundation_pressure.py
 
 test:
 	cd tools/testing/policyfixtures && go test ./...

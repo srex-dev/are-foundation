@@ -7,7 +7,7 @@ require (
 	github.com/jackc/pgx/v5 v5.7.6
 	github.com/pashagolub/pgxmock/v3 v3.4.0
 	github.com/prometheus/client_golang v1.23.2
-	github.com/segmentio/kafka-go v0.4.49
+	github.com/segmentio/kafka-go v0.4.51
 	github.com/testcontainers/testcontainers-go/modules/kafka v0.41.0
 	github.com/testcontainers/testcontainers-go/modules/postgres v0.41.0
 	golang.org/x/sync v0.19.0

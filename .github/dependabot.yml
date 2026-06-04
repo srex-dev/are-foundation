@@ -4,31 +4,71 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    open-pull-requests-limit: 2
+    groups:
+      github-actions:
+        patterns:
+          - "*"
   - package-ecosystem: "gomod"
     directory: "/sx/are-api-gateway"
     schedule:
       interval: "weekly"
+    open-pull-requests-limit: 1
+    groups:
+      go-dependencies:
+        patterns:
+          - "*"
   - package-ecosystem: "gomod"
     directory: "/sx/s0s1-rest-bff"
     schedule:
       interval: "weekly"
+    open-pull-requests-limit: 1
+    groups:
+      go-dependencies:
+        patterns:
+          - "*"
   - package-ecosystem: "gomod"
     directory: "/s0/agent-registry-service"
     schedule:
       interval: "weekly"
+    open-pull-requests-limit: 1
+    groups:
+      go-dependencies:
+        patterns:
+          - "*"
   - package-ecosystem: "gomod"
     directory: "/s0/passport-issuance-engine"
     schedule:
       interval: "weekly"
+    open-pull-requests-limit: 1
+    groups:
+      go-dependencies:
+        patterns:
+          - "*"
   - package-ecosystem: "cargo"
     directory: "/s0/immutable-ledger"
     schedule:
       interval: "weekly"
+    open-pull-requests-limit: 1
+    groups:
+      rust-dependencies:
+        patterns:
+          - "*"
   - package-ecosystem: "cargo"
     directory: "/s1/scope-evaluator-runtime"
     schedule:
       interval: "weekly"
+    open-pull-requests-limit: 1
+    groups:
+      rust-dependencies:
+        patterns:
+          - "*"
   - package-ecosystem: "npm"
     directory: "/s1/opa-integration-layer"
     schedule:
       interval: "weekly"
+    open-pull-requests-limit: 2
+    groups:
+      node-dependencies:
+        patterns:
+          - "*"

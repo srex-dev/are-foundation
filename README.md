@@ -39,6 +39,7 @@ make certs
 make up
 make smoke
 make pressure
+make pressure-matrix
 ```
 
 The local compose gateway listens on `http://localhost:18085` to avoid colliding with a full ARE developer stack.
@@ -63,6 +64,12 @@ You can tune it directly:
 
 ```bash
 python tools/smoke/foundation_pressure.py --target-rps 50 --duration-seconds 30 --concurrency 16
+```
+
+`make pressure-matrix` runs an RPS ladder and writes `reports/foundation-pressure-matrix/latest-matrix.json`:
+
+```bash
+python tools/smoke/foundation_pressure_matrix.py --levels 50,100,200,400 --duration-seconds 30
 ```
 
 ## Developer Gates

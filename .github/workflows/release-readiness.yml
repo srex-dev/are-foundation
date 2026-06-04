@@ -1,0 +1,52 @@
+name: Release Readiness
+
+on:
+  workflow_dispatch:
+    inputs:
+      pressure_levels:
+        description: "Comma-separated RPS ladder for the local compose runtime"
+        required: false
+        default: "50,100,200"
+      duration_seconds:
+        description: "Seconds per pressure level"
+        required: false
+        default: "15"
+
+permissions:
+  contents: read
+
+jobs:
+  release-readiness:
+    name: Release readiness gate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Audit public release boundary
+        run: python tools/security/release_audit.py
+      - name: Start foundation stack
+        run: |
+          python tools/gates/generate_dev_certs.py
+          docker compose -f deploy/compose/docker-compose.yml up -d --build
+      - name: Smoke
+        run: python tools/smoke/foundation_smoke.py
+      - name: Pressure matrix
+        run: >-
+          python tools/smoke/foundation_pressure_matrix.py
+          --levels "${{ github.event.inputs.pressure_levels }}"
+          --duration-seconds "${{ github.event.inputs.duration_seconds }}"
+      - name: Upload public-safe reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: foundation-release-readiness-reports
+          path: reports/
+          if-no-files-found: ignore
+      - name: Compose logs on failure
+        if: failure()
+        run: docker compose -f deploy/compose/docker-compose.yml logs --no-color
+      - name: Stop foundation stack
+        if: always()
+        run: docker compose -f deploy/compose/docker-compose.yml down -v

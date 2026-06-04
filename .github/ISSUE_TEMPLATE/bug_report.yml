@@ -1,0 +1,54 @@
+name: Bug report
+description: Report a public S0/S1 foundation issue.
+title: "[bug]: "
+labels: ["bug", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting an ARE Foundation issue. Do not include secrets, bearer tokens, raw payloads, protected evidence, private proof packets, or policy bodies.
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What happened?
+    validations:
+      required: true
+  - type: dropdown
+    id: surface
+    attributes:
+      label: Surface
+      options:
+        - Gateway
+        - Agent registry
+        - Passport issuance
+        - Scope evaluation
+        - Policy evaluation
+        - Ledger/proof root
+        - Docker Compose
+        - Docs/examples
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Reproduction
+      description: Minimal public-safe steps.
+      placeholder: |
+        1. make up
+        2. make smoke
+        3. ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Public-safe logs
+      description: Redact all credentials, headers, signatures, payloads, policy bodies, and protected evidence.
+      render: text

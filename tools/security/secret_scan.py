@@ -18,7 +18,13 @@ ALLOW_PRIVATE_MARKER_FILES = {
     "CONTRIBUTING.md",
     "docs/public-boundary.md",
     "docs/governance-strata-integration.md",
+    "docs/oss-release-checklist.md",
+    "docs/threat-model.md",
+    "docs/release-notes/v0.1.0.md",
+    ".github/pull_request_template.md",
+    ".github/ISSUE_TEMPLATE/feature_request.yml",
     "tools/security/secret_scan.py",
+    "tools/security/release_audit.py",
 }
 PATTERNS = [
     re.compile(r"cfat_[A-Za-z0-9_-]{20,}"),

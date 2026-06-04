@@ -77,9 +77,12 @@ python tools/smoke/foundation_pressure_matrix.py --levels 50,100,200,400 --durat
 ```bash
 make test
 make gate
+make release-audit
 ```
 
-`make gate` runs tests, the OSS hygiene scan, and the smoke runner.
+`make gate` runs tests and the OSS hygiene scan. Runtime smoke is separate with `make up && make smoke`.
+
+Before making the repository public, run the release checklist in `docs/oss-release-checklist.md`.
 
 ## Repo Layout
 
@@ -97,6 +100,6 @@ examples/                Public-safe flows
 
 ## Boundary
 
-ARE Foundation can evaluate authority and policy. It does not execute customer actions, claim certification, or represent full ARE governance coverage.
+ARE Foundation can evaluate authority and policy. It does not execute customer actions, does not claim certification, and does not represent full ARE governance coverage.
 
 Higher-risk transitions can be wrapped by governance-strata in the commercial platform. This OSS repo only documents that integration concept.

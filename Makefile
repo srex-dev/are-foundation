@@ -1,4 +1,4 @@
-.PHONY: certs up down smoke pressure pressure-matrix test gate secret-scan clean
+.PHONY: certs up down smoke pressure pressure-matrix test gate secret-scan release-audit clean
 
 COMPOSE=docker compose -f deploy/compose/docker-compose.yml
 
@@ -32,6 +32,9 @@ test:
 
 secret-scan:
 	python tools/security/secret_scan.py
+
+release-audit:
+	python tools/security/release_audit.py
 
 gate:
 	python tools/gates/foundation_gate.py

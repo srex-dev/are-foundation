@@ -6,7 +6,13 @@ Do not open public issues containing tokens, credentials, raw payloads, private 
 
 ## Supported Surface
 
-This repository supports the public S0/S1 foundation surface only. It is a local/developer foundation runtime and does not claim production readiness or legal certification.
+This repository supports the public S0/S1 foundation surface only. It is a local/developer foundation runtime and does not claim production readiness, legal certification, or full ARE governance coverage.
+
+Supported release line:
+
+| Version | Supported |
+|---|---|
+| 0.1.x | Yes |
 
 ## Secrets
 
@@ -18,3 +24,8 @@ Never commit:
 - Protected evidence bodies
 - Private `.are-gates` proof archives
 
+## Public Reports
+
+Public-safe reports may contain request IDs, agent IDs, passport IDs, decisions, source refs, aggregate latency, and aggregate error counts.
+
+They must not contain raw customer payloads, protected evidence, credentials, signatures, raw policy bodies, private proof packet contents, or bearer tokens.

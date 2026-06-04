@@ -1,0 +1,36 @@
+name: Feature request
+description: Suggest an OSS foundation improvement.
+title: "[feature]: "
+labels: ["enhancement", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ARE Foundation accepts focused S0/S1 requests only. Commercial Command Center, visual RAG, client demo frontend, S2-S6 adaptive stages, private proof packets, and governance-strata internals are intentionally out of scope.
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Desired outcome
+      description: What should a developer be able to do?
+    validations:
+      required: true
+  - type: dropdown
+    id: surface
+    attributes:
+      label: Surface
+      options:
+        - Gateway/API
+        - Agent/passport authority
+        - Scope/policy evaluation
+        - Public-safe proof basics
+        - Docker/local runtime
+        - Docs/examples
+    validations:
+      required: true
+  - type: textarea
+    id: boundary
+    attributes:
+      label: Boundary check
+      description: How does this remain read/evaluate/proof-only and public-safe?
+    validations:
+      required: true

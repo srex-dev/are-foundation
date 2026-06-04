@@ -28,7 +28,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.11"
       - name: Secret/private export scan
@@ -98,7 +98,7 @@ jobs:
     needs: [hygiene, go, rust, node]
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.11"
       - name: Start foundation stack

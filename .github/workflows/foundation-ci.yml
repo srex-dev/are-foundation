@@ -18,7 +18,7 @@ jobs:
       contents: read
       pull-requests: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: actions/dependency-review-action@v4
         with:
           fail-on-severity: high
@@ -27,7 +27,7 @@ jobs:
     name: Hygiene
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
@@ -49,7 +49,7 @@ jobs:
           - sx/s0s1-rest-bff
           - sx/are-api-gateway
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: actions/setup-go@v5
         with:
           go-version: "1.25.x"
@@ -68,7 +68,7 @@ jobs:
           - s0/immutable-ledger
           - s1/scope-evaluator-runtime
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Install stable Rust
         run: rustup default stable
       - name: cargo test
@@ -82,7 +82,7 @@ jobs:
       run:
         working-directory: s1/opa-integration-layer
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: actions/setup-node@v4
         with:
           node-version: "24"
@@ -97,7 +97,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [hygiene, go, rust, node]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"

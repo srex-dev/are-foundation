@@ -5,22 +5,22 @@ edition = "2021"
 
 [dependencies]
 async-trait = "0.1.89"
-axum = "0.8.4"
-chrono = { version = "0.4.42", features = ["serde"] }
+axum = "0.8.9"
+chrono = { version = "0.4.45", features = ["serde"] }
 lazy_static = "1.5.0"
 prometheus = "0.14"
 prost = "0.14.1"
 serde = { version = "1.0.228", features = ["derive"] }
 thiserror = "2.0.16"
-tokio = { version = "1.47.1", features = ["full"] }
-tonic = "0.14.1"
-tonic-prost = "0.14.1"
+tokio = { version = "1.52.3", features = ["full"] }
+tonic = "0.14.6"
+tonic-prost = "0.14.6"
 tracing = "0.1.41"
 tracing-subscriber = { version = "0.3.19", features = ["fmt", "env-filter", "json"] }
 
 [build-dependencies]
 protoc-bin-vendored = "3.2.0"
-tonic-prost-build = "0.14.1"
+tonic-prost-build = "0.14.6"
 
 [dev-dependencies]
-tokio = { version = "1.47.1", features = ["macros", "rt-multi-thread"] }
+tokio = { version = "1.52.3", features = ["macros", "rt-multi-thread"] }

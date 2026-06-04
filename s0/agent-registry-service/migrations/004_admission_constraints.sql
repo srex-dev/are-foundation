@@ -1,0 +1,5 @@
+ALTER TABLE agents
+  ADD COLUMN IF NOT EXISTS admission_constraints JSONB NOT NULL DEFAULT '{}'::jsonb,
+  ADD COLUMN IF NOT EXISTS admitted_policy_id TEXT,
+  ADD COLUMN IF NOT EXISTS admitted_policy_ver TEXT,
+  ADD COLUMN IF NOT EXISTS admission_ts TIMESTAMPTZ NOT NULL DEFAULT NOW();

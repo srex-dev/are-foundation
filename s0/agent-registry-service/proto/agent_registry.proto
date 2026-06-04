@@ -1,0 +1,128 @@
+syntax = "proto3";
+
+package are.registry.v1;
+option go_package = "github.com/srex-dev/are-foundation/s0/agent-registry-service/proto;registryv1";
+
+service AgentRegistryService {
+  rpc RegisterAgent(RegisterAgentRequest) returns (RegisterAgentResponse);
+  rpc GetAgent(GetAgentRequest) returns (GetAgentResponse);
+  rpc GetAdmissionEnvelope(GetAdmissionEnvelopeRequest) returns (GetAdmissionEnvelopeResponse);
+  rpc ListAgents(ListAgentsRequest) returns (ListAgentsResponse);
+  rpc UpdateAgentStatus(UpdateAgentStatusRequest) returns (UpdateAgentStatusResponse);
+  rpc CheckAgent(CheckAgentRequest) returns (CheckAgentResponse);
+}
+
+message RegisterAgentRequest {
+  string agent_type = 1;
+  string owner_id = 2;
+  string external_id = 3;
+  map<string, string> metadata = 4;
+  // Optional UTF-8 JSON object of admission constraints (stored as JSONB).
+  bytes admission_constraints_json = 5;
+  string admitted_policy_id = 6;
+  string admitted_policy_ver = 7;
+  repeated string admitted_scope_patterns = 8;
+  map<string, double> admitted_behavioral_caps = 9;
+  string issuing_authority = 10;
+  bytes admission_signature = 11;
+  string envelope_id = 12;
+}
+
+message RegisterAgentResponse {
+  Agent agent = 1;
+}
+
+message GetAgentRequest {
+  string agent_id = 1;
+}
+
+message GetAgentResponse {
+  Agent agent = 1;
+}
+
+message AdmissionEnvelope {
+  string envelope_id = 1;
+  string agent_id = 2;
+  string policy_id = 3;
+  string policy_ver = 4;
+  repeated string admitted_scopes = 5;
+  map<string, double> admitted_behavioral_caps = 6;
+  int64 admitted_ts_ms = 7;
+  string issuing_authority = 8;
+  bytes signature = 9;
+}
+
+message GetAdmissionEnvelopeRequest {
+  string agent_id = 1;
+}
+
+message GetAdmissionEnvelopeResponse {
+  AdmissionEnvelope envelope = 1;
+}
+
+message ListAgentsRequest {
+  string status = 1;
+  string type = 2;
+  string owner_id = 3;
+  int32 page_size = 4;
+  string page_token = 5;
+}
+
+message ListAgentsResponse {
+  repeated Agent agents = 1;
+  string next_page_token = 2;
+  int32 total_count = 3;
+}
+
+message UpdateAgentStatusRequest {
+  string agent_id = 1;
+  string new_status = 2;
+  string reason = 3;
+  string updated_by = 4;
+}
+
+message UpdateAgentStatusResponse {
+  Agent agent = 1;
+}
+
+message CheckAgentRequest {
+  string agent_id = 1;
+}
+
+message CheckAgentResponse {
+  string agent_id = 1;
+  string status = 2;
+  bool exists = 3;
+}
+
+message Agent {
+  string agent_id = 1;
+  string agent_type = 2;
+  string owner_id = 3;
+  string external_id = 4;
+  string status = 5;
+  string passport_id = 6;
+  int64 registration_ts = 7;
+  int64 updated_ts = 8;
+  map<string, string> metadata = 9;
+  bytes admission_constraints_json = 10;
+  string admitted_policy_id = 11;
+  string admitted_policy_ver = 12;
+  int64 admission_ts = 13;
+}
+
+enum AgentType {
+  AGENT_TYPE_UNSPECIFIED = 0;
+  AGENT_TYPE_AUTONOMOUS = 1;
+  AGENT_TYPE_ASSISTED = 2;
+  AGENT_TYPE_SYSTEM = 3;
+  AGENT_TYPE_EPHEMERAL = 4;
+}
+
+enum AgentStatus {
+  AGENT_STATUS_UNSPECIFIED = 0;
+  AGENT_STATUS_PENDING = 1;
+  AGENT_STATUS_ACTIVE = 2;
+  AGENT_STATUS_SUSPENDED = 3;
+  AGENT_STATUS_DEREGISTERED = 4;
+}

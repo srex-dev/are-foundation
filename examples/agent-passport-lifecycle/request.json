@@ -1,0 +1,12 @@
+{
+  "agent_type": "demo.worker",
+  "owner_id": "demo-owner",
+  "passport_type": "standard",
+  "ttl_seconds": 3600,
+  "requested_scopes": [
+    {
+      "action_class": "demo.read",
+      "resource_pattern": "urn:demo/*"
+    }
+  ]
+}

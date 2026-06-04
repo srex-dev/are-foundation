@@ -1,0 +1,13 @@
+{
+  "agent_type": "demo.release-agent",
+  "owner_id": "demo-owner",
+  "action_class": "model.promote_to_production",
+  "resource": "model/champion",
+  "requested_scopes": [
+    {
+      "action_class": "model.promote_to_production",
+      "resource_pattern": "model/*"
+    }
+  ]
+}
+

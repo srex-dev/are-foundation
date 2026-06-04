@@ -1,0 +1,59 @@
+syntax = "proto3";
+package are.opa.v1;
+
+service OPAIntegrationService {
+  rpc Evaluate(EvaluateRequest) returns (EvaluateResponse);
+  rpc GetLoadedBundles(GetLoadedBundlesRequest) returns (GetLoadedBundlesResponse);
+  rpc ReloadBundle(ReloadBundleRequest) returns (ReloadBundleResponse);
+}
+
+message EvaluateRequest {
+  string evaluation_id = 1;
+  string agent_id = 2;
+  string action_class = 3;
+  string resource = 4;
+  EvaluationContext context = 5;
+  repeated string bundle_names = 6;
+}
+message EvaluationContext {
+  string passport_id = 1;
+  string passport_type = 2;
+  repeated ContextScope active_scopes = 3;
+  map<string, string> environment = 4;
+  map<string, string> agent_metadata = 5;
+  map<string, string> action_metadata = 6;
+  int64 request_ts = 7;
+}
+message ContextScope { string action_class = 1; string resource_pattern = 2; int64 expires_ts = 3; }
+message EvaluateResponse {
+  string evaluation_id = 1;
+  string effect = 2;
+  string decision_reason = 3;
+  repeated RuleMatch matched_rules = 4;
+  repeated string fired_rules = 5;
+  repeated string active_bundle_names = 6;
+  repeated string active_bundle_versions = 7;
+  int64 evaluated_ts = 8;
+  bool cache_hit = 9;
+  string deny_reason = 10;
+}
+message RuleMatch {
+  string rule_name = 1;
+  string bundle_name = 2;
+  string action_class = 3;
+  string effect = 4;
+  bool fired = 5;
+  string match_reason = 6;
+}
+message GetLoadedBundlesRequest {}
+message GetLoadedBundlesResponse { repeated LoadedBundle bundles = 1; int64 last_reload_ts = 2; }
+message LoadedBundle {
+  string bundle_name = 1;
+  string bundle_id = 2;
+  string version = 3;
+  int64 loaded_ts = 4;
+  int64 rule_count = 5;
+  bool compile_valid = 6;
+}
+message ReloadBundleRequest { string bundle_name = 1; }
+message ReloadBundleResponse { LoadedBundle bundle = 1; bool reloaded = 2; string message = 3; }

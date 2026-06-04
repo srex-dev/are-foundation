@@ -1,0 +1,111 @@
+openapi: 3.1.0
+info:
+  title: ARE Foundation S0/S1 API
+  version: 0.1.0
+  license:
+    name: Apache-2.0
+paths:
+  /v1/identity/agents:
+    post:
+      summary: Register an actor.
+      security:
+        - bearerAuth: []
+      responses:
+        "201":
+          description: Agent registered.
+  /v1/identity/agents/{agent_id}:
+    get:
+      summary: Read a registered actor.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: agent_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Agent record.
+  /v1/passports:
+    post:
+      summary: Issue scoped authority.
+      security:
+        - bearerAuth: []
+      responses:
+        "201":
+          description: Passport issued.
+  /v1/passports/by-agent/{agent_id}:
+    get:
+      summary: List public passport summaries for an agent.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: agent_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Public-safe passport summaries.
+  /v1/passports:verify:
+    post:
+      summary: Verify passport binding and active status.
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Verification result.
+  /v1/enforcement/scope:evaluate:
+    post:
+      summary: Evaluate whether scoped authority permits an action/resource pair.
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Scope decision.
+  /v1/policy/evaluations:
+    post:
+      summary: Evaluate policy for an action.
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Policy decision.
+  /health:
+    get:
+      summary: Health check.
+      responses:
+        "200":
+          description: Healthy.
+  /metrics:
+    get:
+      summary: Prometheus metrics.
+      responses:
+        "200":
+          description: Metrics.
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+  parameters:
+    RequestID:
+      name: X-Request-ID
+      in: header
+      required: true
+      schema:
+        type: string
+    AgentID:
+      name: X-ARE-Agent-ID
+      in: header
+      required: true
+      schema:
+        type: string
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      schema:
+        type: string

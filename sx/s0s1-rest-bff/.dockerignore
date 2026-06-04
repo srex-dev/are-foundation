@@ -1,0 +1,5 @@
+# Build context is sx/s0s1-rest-bff; keep image layers small.
+.git
+*.md
+coverage.out
+*.test

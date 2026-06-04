@@ -1,0 +1,83 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: are
+      POSTGRES_PASSWORD: are
+      POSTGRES_DB: are
+    ports:
+      - "54329:5432"
+    volumes:
+      - ./postgres-init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U are -d are"]
+      interval: 2s
+      timeout: 2s
+      retries: 20
+
+  local-jwks:
+    image: nginx:1.27-alpine
+    volumes:
+      - ./jwks/jwks.json:/usr/share/nginx/html/.well-known/jwks.json:ro
+    ports:
+      - "8088:80"
+
+  opa-s0s1-eval:
+    image: openpolicyagent/opa:0.70.0
+    command: ["run", "--server", "--addr", "0.0.0.0:8181", "/policy"]
+    volumes:
+      - ../../sx/s0s1-rest-bff/policy:/policy:ro
+    ports:
+      - "8181:8181"
+
+  s0s1-rest-bff:
+    build:
+      context: ../..
+      dockerfile: sx/s0s1-rest-bff/Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+      opa-s0s1-eval:
+        condition: service_started
+    environment:
+      ARE_S0S1_TLS_CERT_FILE: /tls/foundation.crt
+      ARE_S0S1_TLS_KEY_FILE: /tls/foundation.key
+      ARE_S0S1_TLS_CA_FILE: /tls/ca.crt
+      ARE_S0S1_DATABASE_URL: postgres://are:are@postgres:5432/are?sslmode=disable
+      ARE_S0S1_OPA_URL: http://opa-s0s1-eval:8181
+      ARE_S0S1_S0_DELEGATE: "0"
+      ARE_DEPLOYMENT_STAGE: stage-s0s1
+    volumes:
+      - ./tls:/tls:ro
+    ports:
+      - "8443:8443"
+      - "8099:8099"
+
+  are-api-gateway:
+    build:
+      context: ../..
+      dockerfile: sx/are-api-gateway/Dockerfile
+      args:
+        GO_BUILD_TAGS: dev
+    depends_on:
+      - local-jwks
+      - s0s1-rest-bff
+    environment:
+      ARE_GW_TLS_CERT_FILE: /tls/foundation.crt
+      ARE_GW_TLS_KEY_FILE: /tls/foundation.key
+      ARE_GW_TLS_CA_FILE: /tls/ca.crt
+      ARE_GW_JWKS_URL: http://local-jwks/.well-known/jwks.json
+      ARE_GW_DEV_UNSAFE_MODE: "true"
+      ARE_GW_ALLOW_INSECURE_TEST_TOKEN: "true"
+      ARE_GW_ENABLE_INSECURE_CONFORMANCE: "true"
+      ARE_GW_S0S1_HTTP_PROXY_BASE: https://s0s1-rest-bff:8443
+      ARE_GW_S0S1_HTTP_TLS_SERVER_NAME: s0s1-rest-bff
+      ARE_GW_UPSTREAM_MODE: mixed
+      ARE_GATEWAY_METRICS_ALLOW_ANONYMOUS: "true"
+      ARE_DEPLOYMENT_STAGE: stage-s0s1
+    volumes:
+      - ./tls:/tls:ro
+    ports:
+      - "18085:8085"
+      - "18086:8080"
+      - "18090:8090"

@@ -1,0 +1,60 @@
+syntax = "proto3";
+package are.scope.v1;
+
+service ScopeEvaluatorService {
+  rpc EvaluateScope(EvaluateScopeRequest) returns (EvaluateScopeResponse);
+  rpc EvaluateScopeBatch(EvaluateScopeBatchRequest) returns (EvaluateScopeBatchResponse);
+  rpc GetAgentScopeSet(GetAgentScopeSetRequest) returns (GetAgentScopeSetResponse);
+  rpc InvalidateCache(InvalidateCacheRequest) returns (InvalidateCacheResponse);
+}
+
+message EvaluateScopeRequest {
+  string evaluation_id = 1;
+  string agent_id = 2;
+  string action_class = 3;
+  string resource = 4;
+  map<string, string> context = 5;
+}
+message EvaluateScopeResponse {
+  string evaluation_id = 1;
+  string agent_id = 2;
+  bool in_scope = 3;
+  repeated ScopeMatch matches = 4;
+  repeated ScopeMiss misses = 5;
+  string passport_id = 6;
+  string passport_type = 7;
+  int64 passport_expires_ts = 8;
+  bool passport_expired = 9;
+  bool cache_hit = 10;
+  int64 evaluated_ts = 11;
+}
+message EvaluateScopeBatchRequest { string agent_id = 1; repeated ScopeCheck checks = 2; }
+message ScopeCheck { string evaluation_id = 1; string action_class = 2; string resource = 3; map<string, string> context = 4; }
+message EvaluateScopeBatchResponse { string agent_id = 1; repeated EvaluateScopeResponse results = 2; }
+message GetAgentScopeSetRequest { string agent_id = 1; }
+message GetAgentScopeSetResponse {
+  string agent_id = 1;
+  string passport_id = 2;
+  string passport_type = 3;
+  repeated ScopeEntry scopes = 4;
+  bool cache_hit = 5;
+  int64 passport_expires_ts = 6;
+}
+message ScopeEntry {
+  string scope_id = 1;
+  string action_class = 2;
+  string resource_pattern = 3;
+  map<string, string> context_constraints = 4;
+  int64 expires_ts = 5;
+  bool is_escalation = 6;
+}
+message InvalidateCacheRequest { string agent_id = 1; string reason = 2; }
+message InvalidateCacheResponse { string agent_id = 1; bool was_cached = 2; }
+message ScopeMatch {
+  string scope_id = 1;
+  string action_class = 2;
+  string resource_pattern = 3;
+  bool is_escalation = 4;
+  int64 scope_expires_ts = 5;
+}
+message ScopeMiss { string scope_id = 1; string action_class = 2; string miss_reason = 3; }

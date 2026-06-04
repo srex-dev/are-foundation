@@ -1,0 +1,91 @@
+syntax = "proto3";
+package are.ledger.v1;
+
+service ImmutableLedgerService {
+  rpc WriteEntry(WriteEntryRequest) returns (WriteEntryResponse);
+  rpc GetEntry(GetEntryRequest) returns (GetEntryResponse);
+  rpc QueryEntries(QueryEntriesRequest) returns (QueryEntriesResponse);
+  rpc VerifyEntry(VerifyEntryRequest) returns (VerifyEntryResponse);
+  rpc VerifyChain(VerifyChainRequest) returns (VerifyChainResponse);
+  rpc GetChainTip(GetChainTipRequest) returns (GetChainTipResponse);
+}
+
+message WriteEntryRequest {
+  string entry_type = 1;
+  string agent_id = 2;
+  bytes content = 3;
+  string content_type = 4;
+  string source_id = 5;
+  string correlation_id = 6;
+  string idempotency_key = 7;
+}
+
+message WriteEntryResponse {
+  string entry_id = 1;
+  string entry_hash = 2;
+  string chain_position = 3;
+  int64 written_ts = 4;
+}
+
+message GetEntryRequest { string entry_id = 1; }
+message GetEntryResponse { LedgerEntry entry = 1; }
+
+message QueryEntriesRequest {
+  string entry_type = 1;
+  string agent_id = 2;
+  string source_id = 3;
+  string correlation_id = 4;
+  int64 from_ts = 5;
+  int64 to_ts = 6;
+  int32 page_size = 7;
+  string page_token = 8;
+}
+
+message QueryEntriesResponse {
+  repeated LedgerEntry entries = 1;
+  string next_page_token = 2;
+  int64 total_count = 3;
+}
+
+message VerifyEntryRequest { string entry_id = 1; }
+message VerifyEntryResponse {
+  string entry_id = 1;
+  bool hash_valid = 2;
+  bool chain_link_valid = 3;
+  string failure_reason = 4;
+}
+
+message VerifyChainRequest {
+  string entry_type = 1;
+  string start_entry_id = 2;
+  string end_entry_id = 3;
+}
+message VerifyChainResponse {
+  bool chain_valid = 1;
+  int64 entries_checked = 2;
+  string first_invalid_entry_id = 3;
+  string failure_reason = 4;
+}
+
+message GetChainTipRequest { string entry_type = 1; }
+message GetChainTipResponse {
+  string entry_id = 1;
+  string entry_hash = 2;
+  int64 chain_position = 3;
+  int64 written_ts = 4;
+}
+
+message LedgerEntry {
+  string entry_id = 1;
+  string entry_type = 2;
+  string agent_id = 3;
+  bytes content = 4;
+  string content_type = 5;
+  string source_id = 6;
+  string correlation_id = 7;
+  string entry_hash = 8;
+  string previous_hash = 9;
+  int64 chain_position = 10;
+  int64 written_ts = 11;
+}
+

@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "comment": "Shared EvaluatePolicy stub vectors. Keep aligned with sx/are-api-gateway/internal/gateway/upstream.go handleEvaluatePolicy and sx/s0s1-rest-bff/internal/policy/evaluate.go Stub (and policy/are_evaluatepolicy.rego for OPA).",
+  "vectors": [
+    {
+      "name": "demo_forbidden_deny",
+      "decision_id": "d1",
+      "agent_id": "agt-1",
+      "action_class": "demo.forbidden_action",
+      "resource": "urn:x",
+      "want_http_status": 200,
+      "want_effect": "DENY",
+      "want_reason_substring": "forbidden"
+    },
+    {
+      "name": "demo_read_allow",
+      "decision_id": "d2",
+      "agent_id": "agt-1",
+      "action_class": "demo.read",
+      "resource": "urn:are:demo:dataset/alpha",
+      "want_http_status": 200,
+      "want_effect": "ALLOW",
+      "want_reason": "read scope allowed"
+    },
+    {
+      "name": "dependency_timeout",
+      "decision_id": "dec-1",
+      "agent_id": "agt-1",
+      "action_class": "READ",
+      "resource": "timeout://simulate",
+      "want_http_status": 504,
+      "want_error_code": "DEPENDENCY_TIMEOUT",
+      "expect_dependency_timeout": true
+    },
+    {
+      "name": "contract_shape_generic_read",
+      "decision_id": "dec-1",
+      "agent_id": "agt-1",
+      "action_class": "READ",
+      "resource": "dataset:alpha",
+      "want_http_status": 200,
+      "want_effect": "ALLOW"
+    }
+  ]
+}

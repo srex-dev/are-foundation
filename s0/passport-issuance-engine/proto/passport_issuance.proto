@@ -1,0 +1,38 @@
+syntax = "proto3";
+package are.passport.v1;
+
+option go_package = "github.com/srex-dev/are-foundation/s0/passport-issuance-engine/proto;passportv1";
+
+service PassportIssuanceService {
+  rpc IssuePassport(IssuePassportRequest) returns (IssuePassportResponse);
+  rpc GetPassport(GetPassportRequest) returns (GetPassportResponse);
+  rpc GetAgentPassport(GetAgentPassportRequest) returns (GetAgentPassportResponse);
+  rpc VerifyPassport(VerifyPassportRequest) returns (VerifyPassportResponse);
+  rpc RenewPassport(RenewPassportRequest) returns (RenewPassportResponse);
+  rpc RevokePassport(RevokePassportRequest) returns (RevokePassportResponse);
+  rpc ListPassports(ListPassportsRequest) returns (ListPassportsResponse);
+}
+
+message IssuePassportRequest { string agent_id = 1; string passport_type = 2; repeated ScopeRequest requested_scopes = 3; int64 ttl_seconds = 4; string issued_by = 5; bool force_reissue = 6; string reason = 7; }
+message IssuePassportResponse { Passport passport = 1; }
+message GetPassportRequest { string passport_id = 1; }
+message GetPassportResponse { Passport passport = 1; }
+message GetAgentPassportRequest { string agent_id = 1; }
+message GetAgentPassportResponse { Passport passport = 1; }
+message VerifyPassportRequest { string passport_id = 1; bytes signature = 2; bytes payload = 3; }
+message VerifyPassportResponse { bool valid = 1; string passport_id = 2; string status = 3; int64 expires_ts = 4; string failure_reason = 5; repeated PassportScope active_scopes = 6; }
+message RenewPassportRequest { string passport_id = 1; int64 ttl_seconds = 2; string renewed_by = 3; string reason = 4; repeated ScopeRequest override_scopes = 5; }
+message RenewPassportResponse { Passport new_passport = 1; string old_passport_id = 2; }
+message RevokePassportRequest { string passport_id = 1; string reason = 2; string revoked_by = 3; }
+message RevokePassportResponse { string passport_id = 1; string status = 2; int64 revoked_ts = 3; }
+message ListPassportsRequest { string agent_id = 1; string status = 2; string type = 3; int32 page_size = 4; string page_token = 5; }
+message ListPassportsResponse { repeated Passport passports = 1; string next_page_token = 2; int32 total_count = 3; }
+message ScopeRequest { string action_class = 1; string resource_pattern = 2; map<string, string> context_constraints = 3; int64 scope_ttl_seconds = 4; }
+message PassportScope { string scope_id = 1; string action_class = 2; string resource_pattern = 3; map<string, string> context_constraints = 4; int64 granted_ts = 5; int64 expires_ts = 6; bool is_escalation = 7; }
+message Passport {
+  string passport_id = 1; string agent_id = 2; string passport_type = 3; repeated PassportScope scope_set = 4; string status = 5; string issued_by = 6;
+  string credential_id = 7; string public_key_pem = 8; bytes signature = 9; int64 issued_ts = 10; int64 expires_ts = 11; int64 revoked_ts = 12;
+  string revocation_reason = 13; string superseded_by = 14;
+  string policy_id_at_issuance = 15;
+  string policy_ver_at_issuance = 16;
+}

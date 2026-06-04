@@ -1,0 +1,13 @@
+{
+  "agent_type": "demo.data-agent",
+  "owner_id": "demo-owner",
+  "action_class": "demo.read",
+  "resource": "urn:dataset/customer-safe-summary",
+  "requested_scopes": [
+    {
+      "action_class": "demo.read",
+      "resource_pattern": "urn:dataset/*"
+    }
+  ]
+}
+

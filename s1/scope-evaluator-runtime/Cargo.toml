@@ -14,7 +14,7 @@ serde = { version = "1.0.228", features = ["derive"] }
 thiserror = "2.0.16"
 tokio = { version = "1.47.1", features = ["full"] }
 tonic = "0.14.1"
-tonic-prost = "0.14.1"
+tonic-prost = "0.14.6"
 tracing = "0.1.41"
 tracing-subscriber = { version = "0.3.19", features = ["fmt", "env-filter", "json"] }
 

@@ -6,7 +6,7 @@ edition = "2021"
 [dependencies]
 async-trait = "0.1.89"
 axum = "0.8.4"
-chrono = { version = "0.4.42", features = ["serde"] }
+chrono = { version = "0.4.45", features = ["serde"] }
 lazy_static = "1.5.0"
 prometheus = "0.14"
 prost = "0.14.1"

@@ -1,0 +1,143 @@
+#!/usr/bin/env sh
+set -eu
+
+APP_NAME="ARE Foundation"
+COMPOSE_FILE="deploy/compose/docker-compose.yml"
+
+find_root() {
+  if [ -n "${ARE_FOUNDATION_HOME:-}" ] && [ -f "$ARE_FOUNDATION_HOME/$COMPOSE_FILE" ]; then
+    printf '%s\n' "$ARE_FOUNDATION_HOME"
+    return 0
+  fi
+
+  script_path="$0"
+  case "$script_path" in
+    /*) ;;
+    *) script_path="$(pwd)/$script_path" ;;
+  esac
+
+  script_dir="$(CDPATH= cd -- "$(dirname -- "$script_path")" && pwd)"
+  candidates="
+$script_dir/..
+$script_dir/../libexec
+$script_dir/../share/are-foundation
+$(pwd)
+"
+
+  for candidate in $candidates; do
+    candidate_root="$(CDPATH= cd -- "$candidate" 2>/dev/null && pwd || true)"
+    if [ -n "$candidate_root" ] && [ -f "$candidate_root/$COMPOSE_FILE" ]; then
+      printf '%s\n' "$candidate_root"
+      return 0
+    fi
+  done
+
+  printf '%s\n' "Could not locate ARE Foundation root. Set ARE_FOUNDATION_HOME." >&2
+  exit 1
+}
+
+python_cmd() {
+  if command -v python3 >/dev/null 2>&1; then
+    printf '%s\n' "python3"
+  elif command -v python >/dev/null 2>&1; then
+    printf '%s\n' "python"
+  else
+    printf '%s\n' "python3 or python is required." >&2
+    exit 1
+  fi
+}
+
+docker_compose() {
+  if command -v docker >/dev/null 2>&1 && docker compose version >/dev/null 2>&1; then
+    docker compose "$@"
+  else
+    printf '%s\n' "Docker Compose v2 is required. Install Docker Desktop or Docker Engine with compose." >&2
+    exit 1
+  fi
+}
+
+usage() {
+  cat <<'USAGE'
+ARE Foundation developer bootstrap
+
+Usage:
+  are-foundation <command> [args]
+
+Commands:
+  help              Show this help
+  version           Print the installed ARE Foundation version
+  root              Print the resolved repository/runtime root
+  init | certs      Generate local development certificates
+  up                Start the local Docker Compose foundation stack
+  down              Stop the local Docker Compose foundation stack
+  smoke             Run the public-safe authority smoke flow
+  pressure          Run the authority-path pressure check
+  pressure-matrix   Run the RPS ladder pressure matrix
+  gate              Run the public S0/S1 test and hygiene gate
+  release-audit     Run the public release boundary audit
+  openapi           Print the public OpenAPI path
+
+Homebrew support is developer bootstrap only. Docker Compose remains the runtime.
+USAGE
+}
+
+command_name="${1:-help}"
+case "$command_name" in
+  help|-h|--help)
+    usage
+    exit 0
+    ;;
+esac
+shift || true
+
+ROOT="$(find_root)"
+PY="$(python_cmd)"
+
+cd "$ROOT"
+
+case "$command_name" in
+  version|-v|--version)
+    if [ -f VERSION ]; then
+      version="$(cat VERSION)"
+    else
+      version="unknown"
+    fi
+    printf '%s %s\n' "$APP_NAME" "$version"
+    ;;
+  root)
+    printf '%s\n' "$ROOT"
+    ;;
+  init|certs)
+    "$PY" tools/gates/generate_dev_certs.py "$@"
+    ;;
+  up)
+    "$PY" tools/gates/generate_dev_certs.py
+    docker_compose -f "$COMPOSE_FILE" up -d --build "$@"
+    ;;
+  down)
+    docker_compose -f "$COMPOSE_FILE" down "$@"
+    ;;
+  smoke)
+    "$PY" tools/smoke/foundation_smoke.py "$@"
+    ;;
+  pressure)
+    "$PY" tools/smoke/foundation_pressure.py "$@"
+    ;;
+  pressure-matrix)
+    "$PY" tools/smoke/foundation_pressure_matrix.py "$@"
+    ;;
+  gate)
+    "$PY" tools/gates/foundation_gate.py "$@"
+    ;;
+  release-audit)
+    "$PY" tools/security/release_audit.py "$@"
+    ;;
+  openapi)
+    printf '%s\n' "$ROOT/api/openapi.yaml"
+    ;;
+  *)
+    printf 'Unknown command: %s\n\n' "$command_name" >&2
+    usage >&2
+    exit 2
+    ;;
+esac

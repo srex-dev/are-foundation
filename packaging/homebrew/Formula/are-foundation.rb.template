@@ -1,0 +1,21 @@
+class AreFoundation < Formula
+  desc "S0/S1 foundation for governed agent authority and public-safe proof basics"
+  homepage "https://github.com/srex-dev/are-foundation"
+  url "https://github.com/srex-dev/are-foundation/archive/refs/tags/v__VERSION__.tar.gz"
+  sha256 "__SHA256__"
+  license "Apache-2.0"
+  head "https://github.com/srex-dev/are-foundation.git", branch: "main"
+
+  depends_on "docker"
+  depends_on "python@3.11"
+
+  def install
+    libexec.install Dir["*"]
+    bin.install_symlink libexec/"bin/are-foundation" => "are-foundation"
+  end
+
+  test do
+    assert_match "ARE Foundation", shell_output("#{bin}/are-foundation version")
+    assert_match "Docker Compose remains the runtime", shell_output("#{bin}/are-foundation help")
+  end
+end

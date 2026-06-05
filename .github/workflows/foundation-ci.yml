@@ -33,6 +33,8 @@ jobs:
           python-version: "3.11"
       - name: Secret/private export scan
         run: python tools/security/secret_scan.py
+      - name: CLI and Homebrew packaging check
+        run: python tools/testing/cli_wrapper_check.py
       - name: Release audit
         run: python tools/security/release_audit.py
 

@@ -76,6 +76,34 @@ make pressure-matrix
 
 The local compose gateway listens on `http://localhost:18085` to avoid colliding with a full ARE developer stack.
 
+### Developer CLI
+
+You can also use the checked-in helper CLI:
+
+```bash
+./bin/are-foundation up
+./bin/are-foundation smoke
+./bin/are-foundation pressure
+```
+
+The helper is a thin developer bootstrap around the same Docker Compose and test
+scripts. It does not install production services or execute customer actions.
+
+### Homebrew Bootstrap
+
+Homebrew support is intended for local developer setup after the public tap is
+published:
+
+```bash
+brew tap srex-dev/are
+brew install are-foundation
+are-foundation up
+are-foundation smoke
+```
+
+Docker Compose remains the runtime. See `docs/homebrew.md` for the tap
+publication checklist and formula template.
+
 `make smoke` runs a public-safe flow:
 
 ```text
@@ -125,6 +153,7 @@ Before making the repository public, run the release checklist in `docs/oss-rele
 - Architecture: `docs/architecture.md`
 - Public/commercial boundary: `docs/public-boundary.md`
 - Governance-strata integration hook: `docs/governance-strata-integration.md`
+- Homebrew developer bootstrap: `docs/homebrew.md`
 - Threat model: `docs/threat-model.md`
 - Release checklist: `docs/oss-release-checklist.md`
 

@@ -22,6 +22,7 @@ def run(cmd: list[str], cwd: Path = ROOT) -> None:
 def main() -> int:
     try:
         run([sys.executable, "tools/security/secret_scan.py"])
+        run([sys.executable, "tools/testing/cli_wrapper_check.py"])
         run(["go", "test", "./..."], ROOT / "tools" / "testing" / "policyfixtures")
         run(["go", "test", "./..."], ROOT / "s0" / "agent-registry-service")
         run(["go", "test", "./..."], ROOT / "s0" / "passport-issuance-engine")

@@ -102,7 +102,9 @@ are-foundation smoke
 ```
 
 Docker Compose remains the runtime. See `docs/homebrew.md` for the tap
-publication checklist and formula template.
+publication checklist and formula template. Use the first public release tag
+that includes `bin/are-foundation` for the tap; if `v0.1.0` predates that helper,
+cut `v0.1.1` or later.
 
 `make smoke` runs a public-safe flow:
 

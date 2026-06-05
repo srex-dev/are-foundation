@@ -1,5 +1,10 @@
 # ARE Foundation
 
+[![Foundation CI](https://github.com/srex-dev/are-foundation/actions/workflows/foundation-ci.yml/badge.svg)](https://github.com/srex-dev/are-foundation/actions/workflows/foundation-ci.yml)
+[![Release Readiness](https://github.com/srex-dev/are-foundation/actions/workflows/release-readiness.yml/badge.svg)](https://github.com/srex-dev/are-foundation/actions/workflows/release-readiness.yml)
+[![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-blue.svg)](LICENSE)
+[![Security Policy](https://img.shields.io/badge/security-policy-green.svg)](SECURITY.md)
+
 ARE Foundation is the Apache-2.0 S0/S1 wedge of the Agent Runtime Environment.
 
 It lets you run the foundation of governed agent authority before any customer
@@ -11,6 +16,13 @@ action executes:
 4. Produce public-safe proof basics with `executed=false`.
 
 This repository is intentionally not the full commercial ARE platform. It does not include Command Center, visual RAG, the client demo frontend, BYOPolicy commercial UX, synthetic emulator proof packets, S2-S6 adaptive stages, or governance-strata internals.
+
+## Project Status
+
+ARE Foundation is an early `0.1.x` foundation release. It is meant for local
+development, evaluation, examples, and integration experiments around governed
+agent authority. It is not a production certification product, does not execute
+customer actions by default, and does not represent full ARE governance coverage.
 
 ## Why It Exists
 
@@ -158,6 +170,9 @@ Before making the repository public, run the release checklist in `docs/oss-rele
 - Homebrew developer bootstrap: `docs/homebrew.md`
 - Threat model: `docs/threat-model.md`
 - Release checklist: `docs/oss-release-checklist.md`
+- Security policy: `SECURITY.md`
+- Contributing guide: `CONTRIBUTING.md`
+- Code of conduct: `CODE_OF_CONDUCT.md`
 
 ## Repo Layout
 
@@ -178,3 +193,44 @@ examples/                Public-safe flows
 ARE Foundation can evaluate authority and policy. It does not execute customer actions, does not claim certification, and does not represent full ARE governance coverage.
 
 Higher-risk transitions can be wrapped by governance-strata in the commercial platform. This OSS repo only documents that integration concept.
+
+## Contributing
+
+Contributions are welcome for the public S0/S1 surface: identity, passports,
+scope evaluation, policy evaluation, proof-root basics, examples, docs, tests,
+and developer tooling.
+
+Please read `CONTRIBUTING.md` and `CODE_OF_CONDUCT.md` before opening an issue or
+pull request. Commercial-only surfaces such as Command Center, visual RAG,
+private proof packets, S2-S6 adaptive stages, and governance-strata internals are
+out of scope for this repository.
+
+## Security
+
+Please do not open public issues for vulnerabilities or sensitive material. Use
+the private reporting path in `SECURITY.md`.
+
+Do not include tokens, credentials, raw headers, signatures, protected evidence,
+raw customer payloads, or private proof packets in issues, pull requests, logs,
+examples, or public reports.
+
+## Roadmap
+
+Near-term public foundation work:
+
+- Homebrew tap publication after the first public tag containing the helper CLI.
+- SDK and client examples for the S0/S1 REST surface.
+- Clearer policy and scope evaluation examples.
+- Hardened public-safe proof summaries.
+- Optional observability hooks that do not expose commercial Command Center code.
+
+## Support
+
+Use GitHub issues for public bugs, docs gaps, and feature requests that fit the
+S0/S1 foundation boundary. For security concerns, use `SECURITY.md` instead of a
+public issue.
+
+## License
+
+ARE Foundation is licensed under the Apache License 2.0. See `LICENSE` and
+`NOTICE`.

@@ -166,7 +166,7 @@ make release-audit
 
 `make gate` runs tests and the OSS hygiene scan. Runtime smoke is separate with `make up && make smoke`.
 
-Before making the repository public, run the release checklist in `docs/oss-release-checklist.md`.
+Before cutting a public release or major public update, run the release checklist in `docs/oss-release-checklist.md`.
 
 ## Deeper Docs
 

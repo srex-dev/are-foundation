@@ -95,4 +95,4 @@ Use this phrasing:
 
 If a future change adds any of the larger platform capabilities to this repo, it
 must update this document, `docs/public-boundary.md`, the OpenAPI contract, and
-the release audit before the repository is made public.
+the release audit before that change is released publicly.

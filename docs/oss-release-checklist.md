@@ -1,6 +1,7 @@
 # OSS Release Checklist
 
-Use this checklist before changing repository visibility to public.
+Use this checklist before cutting a public release, publishing a major public
+update, or changing repository release settings.
 
 ## 1. Boundary
 
@@ -76,7 +77,7 @@ Publish release notes from `docs/release-notes/v0.1.0.md`.
 
 After all gates are green:
 
-- Change repository visibility to public.
+- Confirm repository visibility is public.
 - Re-run GitHub Actions.
 - Open the README, examples, and API spec from a logged-out browser session.
 - Confirm no private links, tokens, evidence, protected policy bodies, or internal-only language appears.

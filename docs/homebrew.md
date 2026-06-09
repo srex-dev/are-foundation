@@ -14,7 +14,7 @@ are-foundation down
 
 ## Intended Public Install
 
-After the repository is public and a release tarball SHA is available, publish a
+After a public release tag and release tarball SHA are available, publish a
 formula in a tap such as `srex-dev/homebrew-are`:
 
 ```bash

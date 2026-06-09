@@ -172,6 +172,7 @@ Before making the repository public, run the release checklist in `docs/oss-rele
 
 - Architecture: `docs/architecture.md`
 - Public/commercial boundary: `docs/public-boundary.md`
+- Foundation scope and limitations: `docs/foundation-scope-and-limitations.md`
 - Deployment boundary: `docs/deployment-boundary.md`
 - Dev-mode security: `docs/dev-mode-security.md`
 - Governance-strata integration hook: `docs/governance-strata-integration.md`
@@ -235,6 +236,8 @@ Near-term public foundation work:
 - Clearer policy and scope evaluation examples.
 - Hardened public-safe proof summaries.
 - Optional observability hooks that do not expose commercial Command Center code.
+- Explicit future-design notes for delegation, recovery, and sensitive proof
+  without moving those higher-stage systems into the foundation repo.
 
 ## Support
 

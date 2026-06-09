@@ -17,6 +17,7 @@ ALLOW_PRIVATE_MARKER_FILES = {
     "SECURITY.md",
     "CONTRIBUTING.md",
     "docs/public-boundary.md",
+    "docs/foundation-scope-and-limitations.md",
     "docs/deployment-boundary.md",
     "docs/dev-mode-security.md",
     "docs/governance-strata-integration.md",

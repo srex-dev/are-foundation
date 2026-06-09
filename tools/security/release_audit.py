@@ -23,6 +23,7 @@ REQUIRED_FILES = [
     ".github/workflows/release-readiness.yml",
     ".github/pull_request_template.md",
     "docs/public-boundary.md",
+    "docs/foundation-scope-and-limitations.md",
     "docs/deployment-boundary.md",
     "docs/dev-mode-security.md",
     "docs/threat-model.md",
@@ -47,6 +48,17 @@ REQUIRED_BOUNDARY_TEXT = [
     "S2-S6",
     "governance-strata internals",
     "local Docker Compose",
+    "Foundation scope and limitations",
+]
+REQUIRED_SCOPE_TEXT = [
+    "delegated authority chains",
+    "denial recovery",
+    "content-aware checks",
+    "sensitive proof",
+    "observability",
+    "bootstrap",
+    "governance-strata",
+    "executed=false",
 ]
 REQUIRED_OPENAPI_TEXT = [
     "operationId:",
@@ -88,6 +100,10 @@ def main() -> int:
     for text in REQUIRED_OPENAPI_TEXT:
         if text not in openapi:
             findings.append(f"OpenAPI missing contract detail: {text}")
+    scope_doc = (ROOT / "docs/foundation-scope-and-limitations.md").read_text(encoding="utf-8")
+    for text in REQUIRED_SCOPE_TEXT:
+        if text not in scope_doc:
+            findings.append(f"scope/limitations doc missing answer: {text}")
     if run_secret_scan() != 0:
         findings.append("secret scan failed")
     if findings:

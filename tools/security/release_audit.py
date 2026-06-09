@@ -22,6 +22,7 @@ REQUIRED_FILES = [
     ".github/workflows/foundation-ci.yml",
     ".github/workflows/release-readiness.yml",
     ".github/pull_request_template.md",
+    "docs/api-contract.md",
     "docs/public-boundary.md",
     "docs/foundation-scope-and-limitations.md",
     "docs/deployment-boundary.md",
@@ -60,6 +61,14 @@ REQUIRED_SCOPE_TEXT = [
     "governance-strata",
     "executed=false",
 ]
+REQUIRED_API_CONTRACT_TEXT = [
+    "Security Contract",
+    "End-To-End Model Promotion Check",
+    "Real OPA Policy",
+    "Idempotency-Key",
+    "model/experimental-candidate",
+    "executed=false",
+]
 REQUIRED_OPENAPI_TEXT = [
     "operationId:",
     "requestBody:",
@@ -70,6 +79,8 @@ REQUIRED_OPENAPI_TEXT = [
     "ErrorEnvelope:",
     "/v1/platform/health:",
     "/health:",
+    "x-are-security-contract:",
+    "externalDocs:",
 ]
 
 
@@ -104,6 +115,14 @@ def main() -> int:
     for text in REQUIRED_SCOPE_TEXT:
         if text not in scope_doc:
             findings.append(f"scope/limitations doc missing answer: {text}")
+    api_contract = (ROOT / "docs/api-contract.md").read_text(encoding="utf-8")
+    for text in REQUIRED_API_CONTRACT_TEXT:
+        if text not in api_contract:
+            findings.append(f"API contract doc missing detail: {text}")
+    opa_policy = (ROOT / "sx/s0s1-rest-bff/policy/are_evaluatepolicy.rego").read_text(encoding="utf-8")
+    for text in ["model.promote_to_production", "experimental", "default decision"]:
+        if text not in opa_policy:
+            findings.append(f"OPA policy missing model promotion contract detail: {text}")
     if run_secret_scan() != 0:
         findings.append("secret scan failed")
     if findings:

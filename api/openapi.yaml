@@ -11,9 +11,26 @@ info:
     policy, and returns public-safe proof basics. It does not execute customer
     actions, activate policy, write commercial evidence, or expose the full ARE
     platform.
+externalDocs:
+  description: Security contract and end-to-end model promotion integration flow.
+  url: docs/api-contract.md
 servers:
   - url: http://localhost:18085
     description: Local Docker Compose gateway in dev-unsafe mode.
+x-are-security-contract:
+  required_headers:
+    - Authorization
+    - X-Request-ID
+    - X-ARE-Agent-ID
+  idempotent_post_headers:
+    - Idempotency-Key
+  local_dev_auth:
+    token: test-token
+    caveat: Works only in the local dev stack with dev-mode flags enabled.
+  boundary:
+    executed: false
+    route_guard: Non-foundation routes fail closed.
+    stage_headers: Client-supplied stage spoofing headers are stripped.
 tags:
   - name: identity
     description: Actor registration and lookup.
@@ -328,7 +345,7 @@ paths:
                     decision:
                       decision_id: smoke-policy
                       effect: ALLOW
-                      reason: policy-evaluated
+                      reason: model promotion policy passed for governed model resource
         "400":
           $ref: "#/components/responses/BadRequest"
         "401":
@@ -413,12 +430,16 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT or local dev test token
+      description: |
+        Production integrations should use JWT/JWKS validation. The local
+        Docker Compose stack accepts `Bearer test-token` only because it is
+        built with dev-mode flags; do not expose that mode publicly.
   parameters:
     RequestID:
       name: X-Request-ID
       in: header
       required: true
-      description: Caller-supplied request correlation ID.
+      description: Caller-supplied request correlation ID. Required by the gateway before auth-protected foundation calls are forwarded.
       schema:
         type: string
         minLength: 1
@@ -427,7 +448,7 @@ components:
       name: X-ARE-Agent-ID
       in: header
       required: true
-      description: Public-safe calling actor identifier used for gateway attribution.
+      description: Public-safe calling actor identifier used for gateway attribution. This is not a substitute for passport-scoped authority.
       schema:
         type: string
         minLength: 1
@@ -436,7 +457,7 @@ components:
       name: Idempotency-Key
       in: header
       required: true
-      description: Required for POST/check paths so retries do not create duplicate foundation records.
+      description: Required for POST/check paths so retries do not create duplicate foundation records or repeated check requests.
       schema:
         type: string
         minLength: 1

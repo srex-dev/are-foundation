@@ -8,6 +8,7 @@ Use this checklist before changing repository visibility to public.
 - Confirm no Command Center, visual RAG, client demo frontend, BYOPolicy commercial UX, synthetic emulator, private proof packets, S2-S6 adaptive stages, or governance-strata internals are present.
 - Confirm README and docs say this is a foundation runtime, not production certification or full ARE coverage.
 - Confirm `docs/foundation-scope-and-limitations.md` answers delegation, denial recovery, policy expressiveness, sensitive proof, observability feedback, warm start, and governance layer/property questions.
+- Confirm `docs/api-contract.md` has the security contract, a complete end-to-end example, and points to a real OPA policy.
 - Confirm `docs/deployment-boundary.md` says Docker Compose is local-only and does not imply supported production hosting.
 - Confirm `docs/dev-mode-security.md` documents every dev-mode flag used by Compose.
 - Confirm `api/openapi.yaml` includes request/response schemas, examples, error envelopes, and the gateway/BFF health distinction.

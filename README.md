@@ -171,6 +171,7 @@ Before making the repository public, run the release checklist in `docs/oss-rele
 ## Deeper Docs
 
 - Architecture: `docs/architecture.md`
+- API contract and end-to-end curl flow: `docs/api-contract.md`
 - Public/commercial boundary: `docs/public-boundary.md`
 - Foundation scope and limitations: `docs/foundation-scope-and-limitations.md`
 - Deployment boundary: `docs/deployment-boundary.md`

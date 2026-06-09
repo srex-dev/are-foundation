@@ -1,0 +1,6 @@
+{
+  "decision_id": "demo-model-promotion-policy-deny",
+  "agent_id": "agt-demo-agent-model-promotion",
+  "action_class": "model.promote_to_production",
+  "resource": "model/experimental-candidate"
+}

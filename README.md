@@ -66,7 +66,9 @@ Public S0/S1 REST surface:
 - `POST /v1/passports:verify`
 - `POST /v1/enforcement/scope:evaluate`
 - `POST /v1/policy/evaluations`
-- `GET /health`
+- `GET /v1/meta/deployment`
+- `GET /v1/platform/health`
+- `GET /health` on the direct BFF health port
 - `GET /metrics`
 
 Mutating/check paths require:
@@ -87,6 +89,10 @@ make pressure-matrix
 ```
 
 The local compose gateway listens on `http://localhost:18085` to avoid colliding with a full ARE developer stack.
+
+The Compose stack is local-dev only. It uses guarded dev-mode flags such as the
+test token bypass and anonymous metrics so the laptop flow is easy to run. See
+`docs/dev-mode-security.md` before adapting anything beyond localhost.
 
 ### Developer CLI
 
@@ -166,6 +172,8 @@ Before making the repository public, run the release checklist in `docs/oss-rele
 
 - Architecture: `docs/architecture.md`
 - Public/commercial boundary: `docs/public-boundary.md`
+- Deployment boundary: `docs/deployment-boundary.md`
+- Dev-mode security: `docs/dev-mode-security.md`
 - Governance-strata integration hook: `docs/governance-strata-integration.md`
 - Homebrew developer bootstrap: `docs/homebrew.md`
 - Threat model: `docs/threat-model.md`
@@ -193,6 +201,10 @@ examples/                Public-safe flows
 ARE Foundation can evaluate authority and policy. It does not execute customer actions, does not claim certification, and does not represent full ARE governance coverage.
 
 Higher-risk transitions can be wrapped by governance-strata in the commercial platform. This OSS repo only documents that integration concept.
+
+This repo ships local Docker Compose for development and evaluation. It does not
+ship Helm, Terraform, Kubernetes/OpenShift manifests, production ingress, managed
+identity, secret management, or a production support boundary in v0.1.x.
 
 ## Contributing
 

@@ -9,6 +9,7 @@ This document describes the public OSS S0/S1 foundation boundary.
 - Scope and policy decisions.
 - Public-safe proof summaries.
 - Local development credentials used only for Docker Compose.
+- Dev-mode flags used only for local Docker Compose.
 
 ## Trust Boundaries
 
@@ -33,6 +34,8 @@ This document describes the public OSS S0/S1 foundation boundary.
 | OSS users mistake checks for execution | README/release docs and smoke reports state `executed=false` and `receipt_created=false` |
 | Unknown agent/action appears allowed | runtime gates require unknown/revoked/expired paths to fail closed |
 | Local demo credentials are reused in real environments | SECURITY.md and docs mark compose credentials as local-only |
+| Dev-mode flags are copied into an exposed deployment | `docs/dev-mode-security.md` documents every unsafe local flag and the runtime refuses several unsafe combinations unless built for dev |
+| Local Compose is mistaken for a production deployment | `docs/deployment-boundary.md` states the shipped artifacts are local-only and lists what is intentionally not provided |
 
 ## Public Proof Rule
 

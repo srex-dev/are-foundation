@@ -17,6 +17,8 @@ ALLOW_PRIVATE_MARKER_FILES = {
     "SECURITY.md",
     "CONTRIBUTING.md",
     "docs/public-boundary.md",
+    "docs/deployment-boundary.md",
+    "docs/dev-mode-security.md",
     "docs/governance-strata-integration.md",
     "docs/oss-release-checklist.md",
     "docs/threat-model.md",

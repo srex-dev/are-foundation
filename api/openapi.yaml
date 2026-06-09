@@ -4,108 +4,771 @@ info:
   version: 0.1.0
   license:
     name: Apache-2.0
+  description: |
+    Public S0/S1 foundation API for governed agent authority.
+
+    This surface registers an actor, issues scoped authority, evaluates scope and
+    policy, and returns public-safe proof basics. It does not execute customer
+    actions, activate policy, write commercial evidence, or expose the full ARE
+    platform.
+servers:
+  - url: http://localhost:18085
+    description: Local Docker Compose gateway in dev-unsafe mode.
+tags:
+  - name: identity
+    description: Actor registration and lookup.
+  - name: passports
+    description: Scoped authority issuance and verification.
+  - name: enforcement
+    description: Scope checks for action/resource requests.
+  - name: policy
+    description: Policy evaluation for a proposed action.
+  - name: operations
+    description: Health, metrics, and deployment metadata.
 paths:
   /v1/identity/agents:
     post:
+      tags: [identity]
+      operationId: registerAgent
       summary: Register an actor.
+      description: Creates a public-safe actor record. Idempotency protects retries; reusing a key with a different body returns conflict.
       security:
         - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/RequestID"
+        - $ref: "#/components/parameters/AgentID"
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AgentCreateRequest"
+            examples:
+              releaseAgent:
+                value:
+                  agent_type: demo.release-agent
+                  owner_id: demo-owner
+                  metadata:
+                    public: true
       responses:
         "201":
           description: Agent registered.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AgentEnvelope"
+              examples:
+                registered:
+                  value:
+                    agent:
+                      agent_id: agt-smoke-agent
+                      agent_type: demo.release-agent
+                      owner_id: demo-owner
+                      status: ACTIVE
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "409":
+          $ref: "#/components/responses/IdempotencyConflict"
+        "500":
+          $ref: "#/components/responses/InternalError"
   /v1/identity/agents/{agent_id}:
     get:
+      tags: [identity]
+      operationId: getAgent
       summary: Read a registered actor.
       security:
         - bearerAuth: []
       parameters:
+        - $ref: "#/components/parameters/RequestID"
+        - $ref: "#/components/parameters/AgentID"
         - name: agent_id
           in: path
           required: true
           schema:
             type: string
+          example: agt-smoke-agent
       responses:
         "200":
           description: Agent record.
-  /v1/passports:
-    post:
-      summary: Issue scoped authority.
-      security:
-        - bearerAuth: []
-      responses:
-        "201":
-          description: Passport issued.
-  /v1/passports/by-agent/{agent_id}:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AgentEnvelope"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /v1/identity/agents/{agent_id}/admission-envelope:
     get:
-      summary: List public passport summaries for an agent.
+      tags: [identity]
+      operationId: getAdmissionEnvelope
+      summary: Read public-safe admission metadata for an actor when present.
       security:
         - bearerAuth: []
       parameters:
+        - $ref: "#/components/parameters/RequestID"
+        - $ref: "#/components/parameters/AgentID"
         - name: agent_id
           in: path
           required: true
           schema:
             type: string
+          example: agt-smoke-agent
+      responses:
+        "200":
+          description: Admission envelope.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdmissionEnvelopeResponse"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /v1/passports:
+    post:
+      tags: [passports]
+      operationId: issuePassport
+      summary: Issue scoped authority.
+      description: Issues a scoped passport for a known actor. The response is a public-safe authority summary, not a secret credential.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/RequestID"
+        - $ref: "#/components/parameters/AgentID"
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PassportIssueRequest"
+            examples:
+              modelPromotion:
+                value:
+                  agent_id: agt-smoke-agent
+                  passport_type: standard
+                  requested_scopes:
+                    - action_class: model.promote_to_production
+                      resource_pattern: model/*
+                  ttl_seconds: 3600
+                  issued_by: demo-owner
+                  reason: foundation smoke
+      responses:
+        "201":
+          description: Passport issued.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PassportEnvelope"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+  /v1/passports/by-agent/{agent_id}:
+    get:
+      tags: [passports]
+      operationId: listPassportsByAgent
+      summary: List public-safe passport summaries for an agent.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/RequestID"
+        - $ref: "#/components/parameters/AgentID"
+        - name: agent_id
+          in: path
+          required: true
+          schema:
+            type: string
+          example: agt-smoke-agent
       responses:
         "200":
           description: Public-safe passport summaries.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PassportsByAgentResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
   /v1/passports:verify:
     post:
+      tags: [passports]
+      operationId: verifyPassport
       summary: Verify passport binding and active status.
+      description: Returns `executed=false` and `proof_status=reference_only`; it never executes the requested business action.
       security:
         - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/RequestID"
+        - $ref: "#/components/parameters/AgentID"
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PassportVerifyRequest"
+            examples:
+              activePassport:
+                value:
+                  agent_id: agt-smoke-agent
+                  passport_id: ppt-smoke-passport
       responses:
         "200":
           description: Verification result.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PassportVerifyResponse"
+              examples:
+                verified:
+                  value:
+                    verified: true
+                    reason: passport verified
+                    passport_id: ppt-smoke-passport
+                    agent_id: agt-smoke-agent
+                    request_id: foundation-smoke-1
+                    executed: false
+                    proof_status: reference_only
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
   /v1/enforcement/scope:evaluate:
     post:
+      tags: [enforcement]
+      operationId: evaluateScope
       summary: Evaluate whether scoped authority permits an action/resource pair.
+      description: Checks the actor passport scope. A decision of ALLOW is authority proof only; it does not execute the action.
       security:
         - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/RequestID"
+        - $ref: "#/components/parameters/AgentID"
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ScopeEvaluateRequest"
+            examples:
+              modelPromotion:
+                value:
+                  agent_id: agt-smoke-agent
+                  passport_id: ppt-smoke-passport
+                  action_class: model.promote_to_production
+                  resource: model/champion
       responses:
         "200":
           description: Scope decision.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScopeEvaluateResponse"
+              examples:
+                allow:
+                  value:
+                    decision:
+                      effect: ALLOW
+                      reason: scope matched requested passport
+                      agent_id: agt-smoke-agent
+                      action_class: model.promote_to_production
+                      resource: model/champion
+                    request_id: foundation-smoke-1
+                    executed: false
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
   /v1/policy/evaluations:
     post:
+      tags: [policy]
+      operationId: evaluatePolicy
       summary: Evaluate policy for an action.
+      description: Returns an allow/deny policy decision for a proposed action. Policy evaluation is check-only in this OSS surface.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/RequestID"
+        - $ref: "#/components/parameters/AgentID"
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PolicyEvaluationRequest"
+            examples:
+              modelPromotion:
+                value:
+                  decision_id: smoke-policy
+                  agent_id: agt-smoke-agent
+                  action_class: model.promote_to_production
+                  resource: model/champion
+      responses:
+        "200":
+          description: Policy decision.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PolicyEvaluationResponse"
+              examples:
+                allow:
+                  value:
+                    decision:
+                      decision_id: smoke-policy
+                      effect: ALLOW
+                      reason: policy-evaluated
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "502":
+          $ref: "#/components/responses/DependencyUnavailable"
+        "504":
+          $ref: "#/components/responses/DependencyTimeout"
+  /v1/meta/deployment:
+    get:
+      tags: [operations]
+      operationId: getDeploymentMeta
+      summary: Read deployment stage metadata.
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/RequestID"
+        - $ref: "#/components/parameters/AgentID"
+      responses:
+        "200":
+          description: Deployment metadata.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeploymentMetaResponse"
+              examples:
+                local:
+                  value:
+                    deployment_stage: stage-s0s1
+                    request_id: req-1
+  /v1/platform/health:
+    get:
+      tags: [operations]
+      operationId: getGatewayHealth
+      summary: Gateway API-listener health check.
+      description: Available on the gateway API port. This is the recommended public health probe for local compose.
+      responses:
+        "200":
+          description: Gateway healthy.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GatewayHealthResponse"
+              examples:
+                ok:
+                  value:
+                    status: ok
+  /health:
+    get:
+      tags: [operations]
+      operationId: getServiceHealth
+      summary: Direct service health check.
+      description: Direct S0/S1 REST BFF health endpoint on its health port; not routed through the gateway API port.
+      responses:
+        "200":
+          description: Service healthy.
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: ok
+  /metrics:
+    get:
+      tags: [operations]
+      operationId: getGatewayMetrics
+      summary: Prometheus metrics.
+      description: Gateway metrics. Auth is required unless local dev compose explicitly enables anonymous metrics.
       security:
         - bearerAuth: []
       responses:
         "200":
-          description: Policy decision.
-  /health:
-    get:
-      summary: Health check.
-      responses:
-        "200":
-          description: Healthy.
-  /metrics:
-    get:
-      summary: Prometheus metrics.
-      responses:
-        "200":
-          description: Metrics.
+          description: Prometheus text exposition.
+          content:
+            text/plain:
+              schema:
+                type: string
+        "401":
+          $ref: "#/components/responses/Unauthorized"
 components:
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
+      bearerFormat: JWT or local dev test token
   parameters:
     RequestID:
       name: X-Request-ID
       in: header
       required: true
+      description: Caller-supplied request correlation ID.
       schema:
         type: string
+        minLength: 1
+      example: req-20260609-001
     AgentID:
       name: X-ARE-Agent-ID
       in: header
       required: true
+      description: Public-safe calling actor identifier used for gateway attribution.
       schema:
         type: string
+        minLength: 1
+      example: demo-operator
     IdempotencyKey:
       name: Idempotency-Key
       in: header
       required: true
+      description: Required for POST/check paths so retries do not create duplicate foundation records.
       schema:
         type: string
+        minLength: 1
+      example: smoke-agent
+  responses:
+    BadRequest:
+      description: Invalid or missing input.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+    Unauthorized:
+      description: Missing or invalid bearer token.
+      content:
+        text/plain:
+          schema:
+            type: string
+          example: unauthorized
+    NotFound:
+      description: Requested agent, passport, or admission envelope was not found.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+    IdempotencyConflict:
+      description: Idempotency key was reused with a different request body.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+    DependencyUnavailable:
+      description: Policy engine or upstream dependency unavailable.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+    DependencyTimeout:
+      description: Policy engine timeout.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+    InternalError:
+      description: Internal storage or marshal error.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+  schemas:
+    AgentCreateRequest:
+      type: object
+      required: [agent_type, owner_id]
+      properties:
+        agent_type:
+          type: string
+          example: demo.release-agent
+        owner_id:
+          type: string
+          example: demo-owner
+        metadata:
+          type: object
+          additionalProperties: true
+          description: Public-safe metadata only.
+        admission_envelope:
+          type: object
+          additionalProperties: true
+          description: Optional public-safe admission metadata.
+    AgentEnvelope:
+      type: object
+      required: [agent]
+      properties:
+        agent:
+          $ref: "#/components/schemas/Agent"
+    Agent:
+      type: object
+      required: [agent_id, agent_type, owner_id, status]
+      properties:
+        agent_id:
+          type: string
+          example: agt-smoke-agent
+        agent_type:
+          type: string
+          example: demo.release-agent
+        owner_id:
+          type: string
+          example: demo-owner
+        status:
+          type: string
+          enum: [ACTIVE, REVOKED, EXPIRED, UNKNOWN]
+          example: ACTIVE
+    AdmissionEnvelopeResponse:
+      type: object
+      required: [agent_id, admission_envelope]
+      properties:
+        agent_id:
+          type: string
+        admission_envelope:
+          type: object
+          additionalProperties: true
+    PassportIssueRequest:
+      type: object
+      required: [agent_id, passport_type, requested_scopes, ttl_seconds, issued_by, reason]
+      properties:
+        agent_id:
+          type: string
+        passport_type:
+          type: string
+          example: standard
+        requested_scopes:
+          type: array
+          minItems: 1
+          items:
+            $ref: "#/components/schemas/RequestedScope"
+        ttl_seconds:
+          type: integer
+          format: int64
+          minimum: 1
+          example: 3600
+        issued_by:
+          type: string
+          example: demo-owner
+        reason:
+          type: string
+          example: foundation smoke
+        force_reissue:
+          type: boolean
+          default: false
+    RequestedScope:
+      type: object
+      required: [action_class, resource_pattern]
+      properties:
+        action_class:
+          type: string
+          example: model.promote_to_production
+        resource_pattern:
+          type: string
+          example: model/*
+    PassportEnvelope:
+      type: object
+      required: [passport]
+      properties:
+        passport:
+          $ref: "#/components/schemas/Passport"
+    Passport:
+      type: object
+      required: [passport_id, agent_id, passport_type, scope_set, status, issued_by]
+      properties:
+        passport_id:
+          type: string
+          example: ppt-smoke-passport
+        agent_id:
+          type: string
+          example: agt-smoke-agent
+        passport_type:
+          type: string
+          example: standard
+        scope_set:
+          type: array
+          items:
+            $ref: "#/components/schemas/Scope"
+        status:
+          type: string
+          enum: [ACTIVE, REVOKED, EXPIRED, UNKNOWN]
+          example: ACTIVE
+        issued_by:
+          type: string
+          example: demo-owner
+    Scope:
+      type: object
+      required: [scope_id, action_class, resource_pattern]
+      properties:
+        scope_id:
+          type: string
+          example: scp-smoke-passport-0
+        action_class:
+          type: string
+          example: model.promote_to_production
+        resource_pattern:
+          type: string
+          example: model/*
+    PassportsByAgentResponse:
+      type: object
+      required: [agent_id, passports, request_id]
+      properties:
+        agent_id:
+          type: string
+        passports:
+          type: array
+          items:
+            $ref: "#/components/schemas/Passport"
+        request_id:
+          type: string
+    PassportVerifyRequest:
+      type: object
+      required: [passport_id, agent_id]
+      properties:
+        passport_id:
+          type: string
+        agent_id:
+          type: string
+    PassportVerifyResponse:
+      type: object
+      required: [verified, reason, passport_id, agent_id, request_id, executed, proof_status]
+      properties:
+        verified:
+          type: boolean
+        reason:
+          type: string
+        passport_id:
+          type: string
+        agent_id:
+          type: string
+        request_id:
+          type: string
+        executed:
+          type: boolean
+          const: false
+        proof_status:
+          type: string
+          enum: [reference_only]
+    ScopeEvaluateRequest:
+      type: object
+      required: [agent_id, action_class, resource]
+      properties:
+        agent_id:
+          type: string
+        passport_id:
+          type: string
+          description: Optional; if omitted, all active passports for the actor are considered.
+        action_class:
+          type: string
+          example: model.promote_to_production
+        resource:
+          type: string
+          example: model/champion
+    ScopeEvaluateResponse:
+      type: object
+      required: [decision, request_id, executed]
+      properties:
+        decision:
+          $ref: "#/components/schemas/ScopeDecision"
+        request_id:
+          type: string
+        executed:
+          type: boolean
+          const: false
+    ScopeDecision:
+      type: object
+      required: [effect, reason, agent_id, action_class, resource]
+      properties:
+        effect:
+          type: string
+          enum: [ALLOW, DENY]
+        reason:
+          type: string
+        agent_id:
+          type: string
+        action_class:
+          type: string
+        resource:
+          type: string
+    PolicyEvaluationRequest:
+      type: object
+      required: [decision_id, agent_id, action_class]
+      properties:
+        decision_id:
+          type: string
+          example: smoke-policy
+        agent_id:
+          type: string
+          example: agt-smoke-agent
+        action_class:
+          type: string
+          example: model.promote_to_production
+        resource:
+          type: string
+          example: model/champion
+    PolicyEvaluationResponse:
+      type: object
+      required: [decision]
+      properties:
+        decision:
+          $ref: "#/components/schemas/PolicyDecision"
+    PolicyDecision:
+      type: object
+      required: [decision_id, effect, reason]
+      properties:
+        decision_id:
+          type: string
+        effect:
+          type: string
+          enum: [ALLOW, DENY]
+        reason:
+          type: string
+    DeploymentMetaResponse:
+      type: object
+      required: [deployment_stage, request_id]
+      properties:
+        deployment_stage:
+          type: string
+          example: stage-s0s1
+        request_id:
+          type: string
+    GatewayHealthResponse:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [ok]
+    ErrorEnvelope:
+      type: object
+      required: [error]
+      properties:
+        error:
+          $ref: "#/components/schemas/ErrorResponse"
+    ErrorResponse:
+      type: object
+      required: [code, message]
+      properties:
+        code:
+          type: string
+          examples:
+            - INVALID_ARGUMENT
+            - MISSING_IDEMPOTENCY_KEY
+            - NOT_FOUND
+            - IDEMPOTENCY_CONFLICT
+            - DEPENDENCY_TIMEOUT
+            - POLICY_ENGINE_UNAVAILABLE
+        message:
+          type: string
+        request_id:
+          type: string
+        retryable:
+          type: boolean

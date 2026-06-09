@@ -23,6 +23,8 @@ REQUIRED_FILES = [
     ".github/workflows/release-readiness.yml",
     ".github/pull_request_template.md",
     "docs/public-boundary.md",
+    "docs/deployment-boundary.md",
+    "docs/dev-mode-security.md",
     "docs/threat-model.md",
     "docs/oss-release-checklist.md",
     "docs/release-notes/v0.1.0.md",
@@ -44,6 +46,18 @@ REQUIRED_BOUNDARY_TEXT = [
     "Command Center",
     "S2-S6",
     "governance-strata internals",
+    "local Docker Compose",
+]
+REQUIRED_OPENAPI_TEXT = [
+    "operationId:",
+    "requestBody:",
+    "AgentCreateRequest:",
+    "PassportIssueRequest:",
+    "ScopeEvaluateRequest:",
+    "PolicyEvaluationRequest:",
+    "ErrorEnvelope:",
+    "/v1/platform/health:",
+    "/health:",
 ]
 
 
@@ -70,6 +84,10 @@ def main() -> int:
     for text in REQUIRED_BOUNDARY_TEXT:
         if text not in readme:
             findings.append(f"README missing boundary text: {text}")
+    openapi = (ROOT / "api/openapi.yaml").read_text(encoding="utf-8")
+    for text in REQUIRED_OPENAPI_TEXT:
+        if text not in openapi:
+            findings.append(f"OpenAPI missing contract detail: {text}")
     if run_secret_scan() != 0:
         findings.append("secret scan failed")
     if findings:

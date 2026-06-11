@@ -124,6 +124,13 @@ publication checklist and formula template. Use the first public release tag
 that includes `bin/are-foundation` for the tap; if `v0.1.0` predates that helper,
 cut `v0.1.1` or later.
 
+### Agent Integration Examples
+
+MCP, LangGraph, CrewAI, and AutoGen examples live in
+[`srex-dev/are-agent-integrations`](https://github.com/srex-dev/are-agent-integrations).
+That repo shows how to wrap agent tool calls with ARE Foundation passport, scope,
+and policy checks without importing the commercial Command Center surface.
+
 `make smoke` runs a public-safe flow:
 
 ```text

@@ -3,12 +3,12 @@ module are-s0s1-rest-bff
 go 1.25.9
 
 require (
-	github.com/jackc/pgx/v5 v5.9.2
+	github.com/jackc/pgx/v5 v5.10.0
 	github.com/prometheus/client_golang v1.23.2
 	github.com/srex-dev/are-foundation/s0/agent-registry-service v0.0.0
 	github.com/srex-dev/are-foundation/s0/passport-issuance-engine v0.0.0
 	github.com/srex-dev/are-foundation/tools/testing/policyfixtures v0.0.0
-	google.golang.org/grpc v1.80.0
+	google.golang.org/grpc v1.81.1
 )
 
 replace github.com/srex-dev/are-foundation/s0/agent-registry-service => ../../s0/agent-registry-service
@@ -30,9 +30,9 @@ require (
 	github.com/prometheus/procfs v0.16.1 // indirect
 	go.yaml.in/yaml/v2 v2.4.2 // indirect
 	golang.org/x/net v0.51.0 // indirect
-	golang.org/x/sync v0.20.0 // indirect
+	golang.org/x/sync v0.21.0 // indirect
 	golang.org/x/sys v0.42.0 // indirect
 	golang.org/x/text v0.35.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20260209200024-4cfbd4190f57 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20260226221140-a57be14db171 // indirect
 	google.golang.org/protobuf v1.36.11 // indirect
 )

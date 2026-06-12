@@ -131,6 +131,12 @@ MCP, LangGraph, CrewAI, and AutoGen examples live in
 That repo shows how to wrap agent tool calls with ARE Foundation passport, scope,
 and policy checks without importing the commercial Command Center surface.
 
+### Adoption Repos
+
+- Starter kits: [`srex-dev/are-starter-kits`](https://github.com/srex-dev/are-starter-kits)
+- Policy starter packs: [`srex-dev/are-policy-starter-packs`](https://github.com/srex-dev/are-policy-starter-packs)
+- Homebrew tap: [`srex-dev/homebrew-are`](https://github.com/srex-dev/homebrew-are)
+
 `make smoke` runs a public-safe flow:
 
 ```text

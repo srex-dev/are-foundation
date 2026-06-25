@@ -20,8 +20,8 @@ jobs:
     name: Release readiness gate
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6.0.3
-      - uses: actions/setup-python@v6.2.0
+      - uses: actions/checkout@v7.0.0
+      - uses: actions/setup-python@v6.3.0
         with:
           python-version: "3.11"
       - name: Audit public release boundary
